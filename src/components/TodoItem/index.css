@@ -1,0 +1,41 @@
+.todo-item {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 0 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.todo-info {
+  flex: 1;
+}
+
+.text {
+  color: #000;
+  flex: 1;
+  width: 90%;
+  margin: 5px 0;
+}
+
+.text span {
+  margin: 0 15px;
+}
+
+.completed {
+  text-decoration: line-through;
+  text-decoration-color: red;
+}
+
+.remove {
+  color: #444;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 15px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}

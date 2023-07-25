@@ -1,64 +1,56 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import TodoList from "./components/TodoList";
+import Spinner from "./components/Spinner";
 import "./App.css";
-import HelloWorld from "./HelloWorld";
 
-function App() {
-  const onButtonClicked = () => alert("MethodNotImplementedException");
-  // gives error when array empty
-  const [data, setData]: any = useState([
-    { id: -1, userId: -1, title: "none", completed: false },
-  ]);
+export type Data = {
+  userId: number;
+  id: number;
+  title: string;
+  completed: boolean;
+};
 
-  // fetch:
-  fetch("https://jsonplaceholder.typicode.com/todos")
-    .then((response) => response.json())
-    .then((response) => response.splice(0, 50)) // just limiting it to 50
-    .then((json) => console.log(json));
+const App = () => {
+  const [data, setData] = useState<Data[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // can hardcode this, because only bob, susan and joan will ever use this app
-  const users: any = [
-    { id: 1, name: "bob" },
-    { id: 2, name: "susan" },
-    { id: 3, name: "joan" },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      if (data.length === 0) {
+        try {
+          const response = await fetch("https://jsonplaceholder.typicode.com/todos");
+
+          const list = await response.json();
+          setData(list.slice(0, 5));
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleCheckboxChange = (itemId: number) => {
+    setData((prevData) =>
+      prevData.map((item) => (item.id === itemId ? { ...item, completed: !item.completed } : item))
+    );
+  };
 
   return (
-    <div className="App">
-      <HelloWorld msg="hi there" />
-      <div className="home">
-        <p>
+    <>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <div className="App">
           <h1>The Best Todo App</h1>
-        </p>
-        <HelloWorld msg="Hi there" />
-        <button onClick={onButtonClicked}>Load todos</button>
-        <p>
-          <label>Add new todo:</label>
-          <input type="text" id="new-todo" />
-          <button onClick={onButtonClicked}>Add</button>
-        </p>
-        <ul>
-          <li>
-            <p>
-              <span>{data[0].id}</span>
-              <span>{data[0].userId}</span>
-              <span className="completed">
-                <s>{data[0].title}</s>
-              </span>
-              <span>
-                <label>
-                  done?
-                  <input
-                    type="checkbox"
-                    value={data[0].completed ? "checked" : ""}
-                  />
-                </label>
-              </span>
-            </p>
-          </li>
-        </ul>
-      </div>
-    </div>
+          <TodoList data={data} onCheckboxChange={handleCheckboxChange} setData={setData} />
+        </div>
+      )}
+    </>
   );
-}
+};
 
 export default App;
